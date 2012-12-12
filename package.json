@@ -1,0 +1,30 @@
+{
+    "name": "memoizesync",
+    "version": "0.0.1",
+    "description": "Helper for memoizing synchronous functions and methods",
+    "main": "lib/memoizeSync.js",
+    "directories": {
+        "test": "test"
+    },
+    "dependencies": {},
+    "devDependencies": {
+        "mocha": "=1.7.3",
+        "expect.js": "=0.2.0"
+    },
+    "scripts": {
+        "prepublish": "mocha",
+        "test": "mocha"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git://github.com/papandreou/node-memoizesync.git"
+    },
+    "keywords": [
+        "memo",
+        "memoize",
+        "sync",
+        "cache"
+    ],
+    "author": "Andreas Lind Petersen <andreas@one.com>",
+    "license": "BSD"
+}
