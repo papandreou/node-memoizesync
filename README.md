@@ -16,7 +16,7 @@ var memoized = memoizeSync(myExpensiveComputation);
 
 Now `memoized` works exactly like `myExpensiveComputation`, except that
 the actual computation is only performed once for each unique set of
-arguments (apart from the callback):
+arguments:
 
 ```javascript
 var result = memoized(42, 100);
