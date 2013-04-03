@@ -68,12 +68,28 @@ describe('memoizeSync', function () {
         var nextNumber = 1,
             memoizedGetNextNumber = memoizeSync(function getNextNumber(obj, cb) {
                 return nextNumber++;
-            }, function (args) {
-                return args.map(toCanonicalJson).join('\x1d');
+            }, {
+                argumentsStringifier: function (args) {
+                    return args.map(toCanonicalJson).join('\x1d');
+                }
             });
 
         expect(memoizedGetNextNumber({foo: 'bar', quux: 'baz'})).to.equal(1);
         expect(memoizedGetNextNumber({quux: 'baz', foo: 'bar'})).to.equal(1);
         expect(memoizedGetNextNumber({barf: 'baz'})).to.equal(2);
+    });
+
+    it('with a ttl should recompute the value after the ttl has expired', function (done) {
+        var nextNumber = 1,
+            memoizedGetNextNumber = memoizeSync(function getNextNumber(cb) {
+                return nextNumber++;
+            }, {ttl: 10});
+
+        expect(memoizedGetNextNumber()).to.equal(1);
+        expect(memoizedGetNextNumber()).to.equal(1);
+        setTimeout(function () {
+            expect(memoizedGetNextNumber()).to.equal(2);
+            done();
+        }, 15);
     });
 });

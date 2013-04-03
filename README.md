@@ -71,6 +71,38 @@ href="https://github.com/papandreou/node-memoizesync/blob/master/test/memoizeSyn
 custom argumentsStringifier test</a> for another example.
 
 
+### Purging and expiring memoized values ###
+
+You can forcefully clear a specific memoized value using the `purge`
+method on the memoizer:
+
+```javascript
+var memoized = memoizeSync(function functionToMemoize(foo) {
+    // ...
+    return theResult;
+});
+var foo = memoized(123);
+memoized.purge(123);
+foo = memoized(123); // Will be recomputed
+```
+
+`memoizer.purgeAll()` clears all memoized results.
+
+You can also specify a custom ttl (in milliseconds) on the memoized
+results:
+
+```javascript
+var memoized = memoizeSync(function functionToMemoize() {
+    // ...
+    return theResult;
+}, {ttl: 1000});
+```
+
+In the above example the memoized value will be considered stale one
+second after it has been computed, and it will be recomputed next time
+`memoizeSync` is invoked with the same arguments.
+
+
 Installation
 ------------
 
