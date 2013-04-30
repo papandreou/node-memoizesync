@@ -54,9 +54,11 @@ because they stringify to `[object Object]`:
 var memoized = memoizeSync(function functionToMemoize(obj) {
     // ...
     return Object.keys(obj).join('');
-}, function argumentStringifier(args) {
-   return args.map(function (arg) {return JSON.stringify(arg);}).join(",");
-});
+}, {
+    argumentStringifier: function (args) {
+        return args.map(function (arg) {return JSON.stringify(arg);}).join(",");
+    }
+);
 
 memoized({foo: 'bar'}); // 'foo'
 
