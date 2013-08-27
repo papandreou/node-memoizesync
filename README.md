@@ -97,13 +97,30 @@ results:
 var memoized = memoizeSync(function functionToMemoize() {
     // ...
     return theResult;
-}, {ttl: 1000});
+}, {maxAge: 1000});
 ```
 
 In the above example the memoized value will be considered stale one
 second after it has been computed, and it will be recomputed next time
 `memoizeSync` is invoked with the same arguments.
 
+`memoizeSync` uses <a
+href="https://github.com/isaacs/node-lru-cache">node-lru-cache</a> to
+store the memoized values, and it accepts the same parameters in the
+`options` object.
+
+```javascript
+var memoizedFsReadFileSync = memoizeAsync(require('fs').readFileSync, {
+    max: 1000000,
+    length: function (body) {
+        return Buffer.isBuffer(body) ? body.length : Buffer.byteLength(body);
+    },
+    maxAge: 1000
+});
+```
+
+The LRU instance is exposed in the `cache` property of the memoized
+function in case you need to access it.
 
 Installation
 ------------
@@ -111,6 +128,28 @@ Installation
 Make sure you have node.js and npm installed, then run:
 
     npm install memoizesync
+
+Browser compatibility
+---------------------
+
+`memoizeSync` uses the UMD wrapper, so it should also work in
+browsers. You should also have the <a
+href="https://github.com/isaacs/node-lru-cache">node-lru-cache</a>
+included:
+
+```html
+<script src="lru-cache.js"></script>
+<script src="memoizeSync.js"></script>
+<script>
+    var memoizedFunction = memoizeSync(function () {
+        // ...
+    });
+</script>
+```
+
+`lru-cache` uses `Object.defineProperty` and doesn't include an UMD
+wrapper, but if you define a `shims` config it should be possible to
+get it memoizeSync working with require.js, at least in newer browsers.
 
 License
 -------

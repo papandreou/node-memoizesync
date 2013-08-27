@@ -79,11 +79,11 @@ describe('memoizeSync', function () {
         expect(memoizedGetNextNumber({barf: 'baz'})).to.equal(2);
     });
 
-    it('with a ttl should recompute the value after the ttl has expired', function (done) {
+    it('with a maxAge should recompute the value after it has become stale', function (done) {
         var nextNumber = 1,
             memoizedGetNextNumber = memoizeSync(function getNextNumber(cb) {
                 return nextNumber++;
-            }, {ttl: 10});
+            }, {maxAge: 10});
 
         expect(memoizedGetNextNumber()).to.equal(1);
         expect(memoizedGetNextNumber()).to.equal(1);
@@ -91,5 +91,46 @@ describe('memoizeSync', function () {
             expect(memoizedGetNextNumber()).to.equal(2);
             done();
         }, 15);
+    });
+
+    it('with a max limit should purge the least recently used result', function () {
+        var nextNumber = 1,
+            memoizedGetNextNumberPlusOtherNumber = memoizeSync(function getNextNumber(otherNumber) {
+                return otherNumber + (nextNumber++);
+            }, {max: 2});
+
+        expect(memoizedGetNextNumberPlusOtherNumber(1)).to.equal(2);
+        expect(memoizedGetNextNumberPlusOtherNumber(2)).to.equal(4);
+        expect(memoizedGetNextNumberPlusOtherNumber(1)).to.equal(2);
+        // This will purge memoizedGetNextNumberPlusOtherNumber(2):
+        expect(memoizedGetNextNumberPlusOtherNumber(3)).to.equal(6);
+        expect(memoizedGetNextNumberPlusOtherNumber(2)).to.equal(6);
+    });
+
+    it('with a length function should count correctly', function () {
+        var returnLongStringNextTime = false,
+            functionThatReturnsALongStringEverySecondTime = function (number) {
+                var returnValue;
+                if (returnLongStringNextTime) {
+                    returnValue = 'longString';
+                } else {
+                    returnValue = 'a';
+                }
+                returnLongStringNextTime = !returnLongStringNextTime;
+                return returnValue;
+            },
+            memoizedFunctionThatReturnsALongStringEverySecondTime = memoizeSync(functionThatReturnsALongStringEverySecondTime, {
+                length: function (str) {
+                    return str.length;
+                }
+            });
+        memoizedFunctionThatReturnsALongStringEverySecondTime(1);
+        expect(memoizedFunctionThatReturnsALongStringEverySecondTime.cache.length).to.equal(1);
+        memoizedFunctionThatReturnsALongStringEverySecondTime(2);
+        expect(memoizedFunctionThatReturnsALongStringEverySecondTime.cache.length).to.equal(11);
+        memoizedFunctionThatReturnsALongStringEverySecondTime(1);
+        expect(memoizedFunctionThatReturnsALongStringEverySecondTime.cache.length).to.equal(11);
+        memoizedFunctionThatReturnsALongStringEverySecondTime(3);
+        expect(memoizedFunctionThatReturnsALongStringEverySecondTime.cache.length).to.equal(12);
     });
 });
