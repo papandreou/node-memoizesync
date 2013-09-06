@@ -100,6 +100,7 @@ describe('memoizeSync', function () {
             }, {max: 2});
 
         expect(memoizedGetNextNumberPlusOtherNumber(1)).to.equal(2);
+        expect(memoizedGetNextNumberPlusOtherNumber.peek(1)).to.equal(2);
         expect(memoizedGetNextNumberPlusOtherNumber(2)).to.equal(4);
         expect(memoizedGetNextNumberPlusOtherNumber(1)).to.equal(2);
         // This will purge memoizedGetNextNumberPlusOtherNumber(2):
