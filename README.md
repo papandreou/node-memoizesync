@@ -33,14 +33,18 @@ memoizing a method that has access to instance variables:
 ```javascript
 function Foo(name) {
     this.name = name;
-}
 
-Foo.prototype.myMethod = memoizeSync(function (arg1, arg2) {
-    console.warn("Cool, this.name works here!", this.name);
-    // ...
-    return "That was tough, but I'm done now!";
-});
+    this.myMethod = memoizeSync(function (arg1, arg2) {
+        console.warn("Cool, this.name works here!", this.name);
+        // ...
+        return "That was tough, but I'm done now!";
+    });
+}
 ```
+
+(Unfortunately setting `Foo.prototype.myMethod = memoizeSync(...)`
+wouldn't work as the memoizer would be shared among all instances of
+`Foo`).
 
 To distinguish different invocations (whose results need to be cached
 separately) `memoizeSync` relies on a naive stringification of the
