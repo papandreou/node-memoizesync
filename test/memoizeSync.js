@@ -184,4 +184,11 @@ describe('memoizeSync', function () {
         expect(sum, 'to equal', 3);
         expect(memoizedSum.cache.get('999' + memoizedSum.argumentsStringifier([1, 2])), 'to equal', [null, 3]);
     });
+
+    it('should call the memoized function in options.context if specified', function () {
+        var memoizedFunction = memoizeSync(function (a) {
+            return this.foo + a;
+        }, {context: {foo: 4}});
+        expect(memoizedFunction(8), 'to equal', 12);
+    });
 });
