@@ -35,7 +35,7 @@ function Foo(name) {
     this.name = name;
 
     this.myMethod = memoizeSync(function (arg1, arg2) {
-        console.warn("Cool, this.name works here!", this.name);
+        console.log("Cool, this.name works here!", this.name);
         // ...
         return "That was tough, but I'm done now!";
     });
