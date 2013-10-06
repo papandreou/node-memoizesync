@@ -175,11 +175,13 @@ describe('memoizeSync', function () {
         var memoizedSum = memoizeSync(function (a, b) {
             return a + b;
         }, {
-            cacheKeyPrefix: 'foo'
+            cacheKeyPrefix: 999
         });
+
+        expect(memoizedSum.cacheKeyPrefix, 'to be', '999');
 
         var sum = memoizedSum(1, 2);
         expect(sum, 'to equal', 3);
-        expect(memoizedSum.cache.get('foo' + memoizedSum.argumentsStringifier([1, 2])), 'to equal', [null, 3]);
+        expect(memoizedSum.cache.get('999' + memoizedSum.argumentsStringifier([1, 2])), 'to equal', [null, 3]);
     });
 });
