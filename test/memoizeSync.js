@@ -170,4 +170,16 @@ describe('memoizeSync', function () {
         expect(sum, 'to equal', 3);
         expect(cache.keys().length, 'to equal', 2);
     });
+
+    it('should allow specifying a custom cacheKeyPrefix', function () {
+        var memoizedSum = memoizeSync(function (a, b) {
+            return a + b;
+        }, {
+            cacheKeyPrefix: 'foo'
+        });
+
+        var sum = memoizedSum(1, 2);
+        expect(sum, 'to equal', 3);
+        expect(memoizedSum.cache.get('foo' + memoizedSum.argumentsStringifier([1, 2])), 'to equal', [null, 3]);
+    });
 });
