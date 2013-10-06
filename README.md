@@ -113,11 +113,19 @@ href="https://github.com/isaacs/node-lru-cache">node-lru-cache</a> to
 store the memoized values, and it accepts the same parameters in the
 `options` object.
 
+If you want to use the `length` option for lru-cache, note that the
+memoized values are arrays: `[exception, returnValue]`.
+
 ```javascript
 var memoizedFsReadFileSync = memoizeAsync(require('fs').readFileSync, {
     max: 1000000,
-    length: function (body) {
-        return Buffer.isBuffer(body) ? body.length : Buffer.byteLength(body);
+    length: function (exceptionAndReturnValue) {
+        if (exceptionAndReturnValue[0]) {
+            return 1;
+        } else {
+            var body = exceptionAndReturnValue[1];
+            return Buffer.isBuffer(body) ? body.length : Buffer.byteLength(body);
+        }
     },
     maxAge: 1000
 });

@@ -122,8 +122,8 @@ describe('memoizeSync', function () {
                 return returnValue;
             },
             memoizedFunctionThatReturnsALongStringEverySecondTime = memoizeSync(functionThatReturnsALongStringEverySecondTime, {
-                length: function (str) {
-                    return str.length;
+                length: function (exceptionAndReturnValue) {
+                    return exceptionAndReturnValue[0] ? 1 : exceptionAndReturnValue[1].length;
                 }
             });
         memoizedFunctionThatReturnsALongStringEverySecondTime(1);
@@ -165,7 +165,7 @@ describe('memoizeSync', function () {
         var sum = memoizedSum1(1, 2);
         expect(sum, 'to equal', 3);
         expect(cache.keys().length, 'to equal', 1);
-        expect(cache.get(memoizedSum1.cacheKeyPrefix + memoizedSum1.argumentsStringifier([1, 2])), 'to equal', 3);
+        expect(cache.get(memoizedSum1.cacheKeyPrefix + memoizedSum1.argumentsStringifier([1, 2])), 'to equal', [null, 3]);
         sum = memoizedSum2(1, 2);
         expect(sum, 'to equal', 3);
         expect(cache.keys().length, 'to equal', 2);
