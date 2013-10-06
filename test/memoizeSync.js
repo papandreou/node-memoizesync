@@ -1,4 +1,5 @@
 var memoizeSync = require('../lib/memoizeSync'),
+    LRUCache = require('lru-cache'),
     expect = require('unexpected');
 
 describe('memoizeSync', function () {
@@ -133,5 +134,40 @@ describe('memoizeSync', function () {
         expect(memoizedFunctionThatReturnsALongStringEverySecondTime.cache.length, 'to equal', 11);
         memoizedFunctionThatReturnsALongStringEverySecondTime(3);
         expect(memoizedFunctionThatReturnsALongStringEverySecondTime.cache.length, 'to equal', 12);
+    });
+
+    it('should leave unrelated values in the cache when purgeAll is called', function () {
+        var memoizedSum = memoizeSync(function sum(a, b) {
+                return a + b;
+            }),
+            cache = memoizedSum.cache,
+            sum = memoizedSum(1, 2);
+
+        expect(sum, 'to equal', 3);
+        expect(cache.keys().length, 'to equal', 1);
+        cache.set('foo', 'bar');
+        expect(cache.keys().length, 'to equal', 2);
+        memoizedSum.purgeAll();
+        expect(cache.keys().length, 'to equal', 1);
+        expect(cache.get('foo'), 'to equal', 'bar');
+    });
+
+    it('should allow passing an existing lru-cache instance in the options object', function () {
+        function sum(a, b) {
+            return a + b;
+        }
+        var cache = new LRUCache(),
+            memoizedSum1 = memoizeSync(sum, {cache: cache});
+        expect(memoizedSum1.cache, 'to be', cache);
+
+        var memoizedSum2 = memoizeSync(sum, {cache: cache});
+        expect(memoizedSum2.cache, 'to be', cache);
+        var sum = memoizedSum1(1, 2);
+        expect(sum, 'to equal', 3);
+        expect(cache.keys().length, 'to equal', 1);
+        expect(cache.get(memoizedSum1.cacheKeyPrefix + memoizedSum1.argumentsStringifier([1, 2])), 'to equal', 3);
+        sum = memoizedSum2(1, 2);
+        expect(sum, 'to equal', 3);
+        expect(cache.keys().length, 'to equal', 2);
     });
 });
