@@ -59,7 +59,7 @@ var memoized = memoizeSync(function functionToMemoize(obj) {
     // ...
     return Object.keys(obj).join('');
 }, {
-    argumentStringifier: function (args) {
+    argumentsStringifier: function (args) {
         return args.map(function (arg) {return JSON.stringify(arg);}).join(",");
     }
 );
