@@ -153,14 +153,14 @@ describe('memoizeSync', function () {
     });
 
     it('should allow passing an existing lru-cache instance in the options object', function () {
-        function sum(a, b) {
+        function summer(a, b) {
             return a + b;
         }
         var cache = new LRUCache(),
-            memoizedSum1 = memoizeSync(sum, {cache: cache});
+            memoizedSum1 = memoizeSync(summer, {cache: cache});
         expect(memoizedSum1.cache, 'to be', cache);
 
-        var memoizedSum2 = memoizeSync(sum, {cache: cache});
+        var memoizedSum2 = memoizeSync(summer, {cache: cache});
         expect(memoizedSum2.cache, 'to be', cache);
         var sum = memoizedSum1(1, 2);
         expect(sum, 'to equal', 3);
