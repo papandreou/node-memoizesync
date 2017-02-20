@@ -191,4 +191,21 @@ describe('memoizeSync', function () {
         }, {context: {foo: 4}});
         expect(memoizedFunction(8), 'to equal', 12);
     });
+
+    describe('#peek', function () {
+        it('should return memoized value when the entry is in the cache', function () {
+            var memoizedFunction = memoizeSync(function increment(a) {
+                return a + 1;
+            });
+            memoizedFunction(123);
+            expect(memoizedFunction.peek(123), 'to equal', 124);
+        });
+
+        it('should return undefined when the entry is not in the cache', function () {
+            var memoizedFunction = memoizeSync(function increment(a) {
+                return a + 1;
+            });
+            expect(memoizedFunction.peek(123), 'to be undefined');
+        });
+    });
 });
