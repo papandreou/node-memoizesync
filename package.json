@@ -1,6 +1,6 @@
 {
   "name": "memoizesync",
-  "version": "0.4.2",
+  "version": "0.4.3",
   "description": "Helper for memoizing synchronous functions and methods",
   "main": "lib/memoizeSync.js",
   "directories": {
