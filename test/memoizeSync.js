@@ -208,4 +208,17 @@ describe('memoizeSync', function () {
             expect(memoizedFunction.peek(123), 'to be undefined');
         });
     });
+
+    it('should memoize an exception', function () {
+        var memoizedFunction = memoizeSync(function () {
+            throw new Error('argh');
+        });
+        return expect(memoizedFunction, 'to throw')
+            .then(function (err) {
+                return expect(memoizedFunction, 'to throw')
+                    .then(function (err2) {
+                        expect(err, 'to be', err2);
+                    });
+            });
+    });
 });
