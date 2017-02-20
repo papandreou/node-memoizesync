@@ -3,6 +3,11 @@ node-memoizesync
 
 Yet another memoizer for synchronous functions.
 
+[![NPM version](https://badge.fury.io/js/memoizesync.png)](http://badge.fury.io/js/memoizesync)
+[![Build Status](https://travis-ci.org/papandreou/node-memoizesync.svg?branch=master)](https://travis-ci.org/papandreou/node-memoizesync)
+[![Coverage Status](https://coveralls.io/repos/papandreou/node-memoizesync/badge.png)](https://coveralls.io/r/papandreou/node-memoizesync)
+[![Dependency Status](https://david-dm.org/papandreou/node-memoizesync.png)](https://david-dm.org/papandreou/node-memoizesync)
+
 ```javascript
 var memoizeSync = require('memoizesync');
 
