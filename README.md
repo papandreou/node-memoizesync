@@ -16,7 +16,7 @@ function myExpensiveComputation(arg1, arg2) {
     return result;
 }
 
-var memoized = memoizeSync(myExpensiveComputation);
+var memoized = memoizeSync(myExpensiveComputation, options);
 ```
 
 Now `memoized` works exactly like `myExpensiveComputation`, except that
@@ -55,7 +55,7 @@ To distinguish different invocations (whose results need to be cached
 separately) `memoizeSync` relies on a naive stringification of the
 arguments, which is looked up in an internally kept hash. If the
 function you're memoizing takes non-primitive arguments you might want
-to provide a custom `argumentsStringifier` as the second argument to
+to provide a custom `argumentsStringifier` in the options argument to
 `memoizeSync`. Otherwise all object arguments will be considered equal
 because they stringify to `[object Object]`:
 
@@ -122,7 +122,7 @@ If you want to use the `length` option for lru-cache, note that the
 memoized values are arrays: `[exception, returnValue]`.
 
 ```javascript
-var memoizedFsReadFileSync = memoizeAsync(require('fs').readFileSync, {
+var memoizedFsReadFileSync = memoizeSync(require('fs').readFileSync, {
     max: 1000000,
     length: function (exceptionAndReturnValue) {
         if (exceptionAndReturnValue[0]) {
