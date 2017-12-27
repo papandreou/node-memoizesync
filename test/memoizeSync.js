@@ -49,35 +49,52 @@ describe('memoizeSync', function () {
         expect(counter.nextNumber, 'to equal', 3);
     });
 
-    it('should work with a custom argumentsStringifier', function () {
-        function toCanonicalJson(obj) {
-            return JSON.stringify(function traverseAndSortKeys(obj) {
-                if (Array.isArray(obj)) {
-                    return obj.map(traverseAndSortKeys);
-                } else if (typeof obj === 'object' && obj !== null) {
-                    var resultObj = {};
-                    Object.keys(obj).sort().forEach(function (key) {
-                        resultObj[key] = traverseAndSortKeys(obj[key]);
-                    });
-                    return resultObj;
-                } else {
-                    return obj;
-                }
-            }(obj));
-        }
+    describe('with a custom argumentsStringifier', function () {
+        it('should use it instead of String(...)', function () {
+            function toCanonicalJson(obj) {
+                return JSON.stringify(function traverseAndSortKeys(obj) {
+                    if (Array.isArray(obj)) {
+                        return obj.map(traverseAndSortKeys);
+                    } else if (typeof obj === 'object' && obj !== null) {
+                        var resultObj = {};
+                        Object.keys(obj).sort().forEach(function (key) {
+                            resultObj[key] = traverseAndSortKeys(obj[key]);
+                        });
+                        return resultObj;
+                    } else {
+                        return obj;
+                    }
+                }(obj));
+            }
 
-        var nextNumber = 1,
-            memoizedGetNextNumber = memoizeSync(function getNextNumber(obj, cb) {
-                return nextNumber++;
-            }, {
-                argumentsStringifier: function (args) {
-                    return args.map(toCanonicalJson).join('\x1d');
-                }
+            var nextNumber = 1,
+                memoizedGetNextNumber = memoizeSync(function getNextNumber(obj) {
+                    return nextNumber++;
+                }, {
+                    argumentsStringifier: function (args) {
+                        return args.map(toCanonicalJson).join('\x1d');
+                    }
+                });
+
+            expect(memoizedGetNextNumber({foo: 'bar', quux: 'baz'}), 'to equal', 1);
+            expect(memoizedGetNextNumber({quux: 'baz', foo: 'bar'}), 'to equal', 1);
+            expect(memoizedGetNextNumber({barf: 'baz'}), 'to equal', 2);
+        });
+
+        describe('that returns false', function () {
+            it('should bypass the memoization', function () {
+                var nextNumber = 1;
+                var memoizedGetNextNumber = memoizeSync(function getNextNumber() {
+                    return nextNumber++;
+                }, {
+                    argumentsStringifier: function () {
+                        return false;
+                    }
+                });
+                expect(memoizedGetNextNumber(), 'to equal', 1);
+                expect(memoizedGetNextNumber(), 'to equal', 2);
             });
-
-        expect(memoizedGetNextNumber({foo: 'bar', quux: 'baz'}), 'to equal', 1);
-        expect(memoizedGetNextNumber({quux: 'baz', foo: 'bar'}), 'to equal', 1);
-        expect(memoizedGetNextNumber({barf: 'baz'}), 'to equal', 2);
+        });
     });
 
     it('with a maxAge should recompute the value after it has become stale', function (done) {

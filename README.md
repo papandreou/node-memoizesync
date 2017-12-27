@@ -77,6 +77,8 @@ memoized({quux: 'baz'}); // 'quux'
 Had the custom `argumentsStringifier` not been provided, the memoized
 function would would have returned `foo` both times.
 
+If the `argumentsStringifier` returns false, the cache will be bypassed.
+
 Check out <a
 href="https://github.com/papandreou/node-memoizesync/blob/master/test/memoizeSync.js">the
 custom argumentsStringifier test</a> for another example.
